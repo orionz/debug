@@ -154,30 +154,32 @@ module.exports = function setup(env) {
    * @api public
    */
 
-  function enable(namespaces) {
-    createDebug.save(namespaces);
+  function enable(_namespaces) {
+    Promise.resolve(_namespaces).then((namespaces) => {
+      createDebug.save(namespaces);
 
-    createDebug.names = [];
-    createDebug.skips = [];
+      createDebug.names = [];
+      createDebug.skips = [];
 
-    var i;
-    var split = (typeof namespaces === 'string' ? namespaces : '').split(/[\s,]+/);
-    var len = split.length;
+      var i;
+      var split = (typeof namespaces === 'string' ? namespaces : '').split(/[\s,]+/);
+      var len = split.length;
 
-    for (i = 0; i < len; i++) {
-      if (!split[i]) continue; // ignore empty strings
-      namespaces = split[i].replace(/\*/g, '.*?');
-      if (namespaces[0] === '-') {
-        createDebug.skips.push(new RegExp('^' + namespaces.substr(1) + '$'));
-      } else {
-        createDebug.names.push(new RegExp('^' + namespaces + '$'));
+      for (i = 0; i < len; i++) {
+        if (!split[i]) continue; // ignore empty strings
+        namespaces = split[i].replace(/\*/g, '.*?');
+        if (namespaces[0] === '-') {
+          createDebug.skips.push(new RegExp('^' + namespaces.substr(1) + '$'));
+        } else {
+          createDebug.names.push(new RegExp('^' + namespaces + '$'));
+        }
       }
-    }
 
-    for (i = 0; i < createDebug.instances.length; i++) {
-      var instance = createDebug.instances[i];
-      instance.enabled = createDebug.enabled(instance.namespace);
-    }
+      for (i = 0; i < createDebug.instances.length; i++) {
+        var instance = createDebug.instances[i];
+        instance.enabled = createDebug.enabled(instance.namespace);
+      }
+    })
   }
 
   /**
