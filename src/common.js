@@ -154,8 +154,8 @@ module.exports = function setup(env) {
    * @api public
    */
 
-  function enable(_namespaces) {
-    Promise.resolve(_namespaces).then((namespaces) => {
+  function enable(namespaces_or_callback) {
+    var syncEnable = function(namespaces) {
       createDebug.save(namespaces);
 
       createDebug.names = [];
@@ -179,7 +179,12 @@ module.exports = function setup(env) {
         var instance = createDebug.instances[i];
         instance.enabled = createDebug.enabled(instance.namespace);
       }
-    })
+    }
+    if (typeof namespaces_or_callback == 'function') {
+      namespaces_or_callback(function(namespaces) {  syncEnable(namespaces) });
+    } else {
+      syncEnable(namespaces_or_callback);
+    }
   }
 
   /**

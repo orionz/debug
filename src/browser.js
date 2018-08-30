@@ -167,11 +167,13 @@ function localstorage() {
   try {
     if (typeof chrome !== "undefined") {
       return {
-        removeItem: (key) => { chrome.storage.local.remove(key) },
-        setItem: (key, val) => { chome.storage.local.set({ [key]: val })},
-        getItem: (key) => new Promise((resolve,reject) => {
-          chrome.storage.local.get(key, val => resolve(val[key]))
-        }),
+        removeItem: function(key) { chrome.storage.local.remove(key) },
+        setItem: function(key, val) { chome.storage.local.set({ [key]: val })},
+        getItem: function(key) {
+          return function(cb) {
+            chrome.storage.local.get(key, function(val) {  cb(val[key]) })
+          }
+        },
       }
     }
     // TVMLKit (Apple TV JS Runtime) does not have a window object, just localStorage in the global context
