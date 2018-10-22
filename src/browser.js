@@ -165,7 +165,7 @@ function load() {
 
 function localstorage() {
   try {
-    if (typeof chrome !== "undefined") {
+    if (typeof localStorage === "undefined") {
       return {
         removeItem: function(key) { chrome.storage.local.remove(key) },
         setItem: function(key, val) { chome.storage.local.set({ [key]: val })},
